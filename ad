@@ -1,0 +1,35 @@
+Create a new directory and navigate to it in your command prompt or terminal.
+Run the command pip install pyad -t . to install the pyad library and save the package to the current directory.
+Run the command pip install smtplib -t . to install the smtplib library and save the package to the current directory.
+Save your function code in a file called "lambda_function.py" in the same directory.
+Create a deployment package by running the command zip -r deployment_package.zip .
+In the AWS Lambda Management Console, create a new function or update an existing function.
+In the "Function code" section, select "Upload a .zip file" and upload the deployment package you just created.
+Make sure to provide the required IAM permissions and environment variables.
+Set up a trigger for the function, for example, you can set up a CloudWatch Event rule to run the function on a schedule (e.g. daily) to remind the users whose password is about to expire.
+
+
+=====================
+
+import smtplib
+from pyad import pyad
+
+def send_password_expiry_reminder(event, context):
+    # Connect to AD server
+    pyad.set_defaults(ldap_server="ldap.example.com", username="cn=admin,dc=example,dc=com", password="password")
+    
+    # Search for users whose passwords are about to expire
+    users = pyad.aduser.search(query_string="(pwdLastSet<=180)", attributes=["sAMAccountName", "mail", "givenName"])
+    
+    # Connect to the SMTP server
+    server = smtplib.SMTP('smtp.example.com')
+    server.starttls()
+    server.login('username', 'password')
+    
+    # Send an email reminder to each user
+    for user in users:
+        message = f'Dear {user.givenName},\n\nYour password will expire in 3 days. Please update your password to avoid any inconvenience.\n\nThanks,\nThe IT Team'
+        server.sendmail('it-team@example.com', user.mail, message)
+    
+    # Close the SMTP connection
+    server.quit()
