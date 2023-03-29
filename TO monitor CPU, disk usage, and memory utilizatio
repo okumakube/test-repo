@@ -1,0 +1,8 @@
+ TO monitor CPU, disk usage, and memory utilization of an EC2 instances and send an email alert if any of these metrics are outside of the defined threshold values, the following are the general steps to accomplish:
+Create an AWS Identity and Access Management (IAM) user with appropriate permissions to access the EC2, CloudWatch, and SES services.
+Create an AWS Lambda function with python code. You can create a new function by going to the AWS Lambda console and clicking on the "Create function" button. Choose "Author from scratch", give your function a name, choose the appropriate runtime (Python 3.x in this case),
+Configure the environment variables for your Lambda function. This script requires three environment variables: cpu_threshold, disk_threshold, and memory_threshold. Set these variables to the appropriate threshold values for your use case.
+Add the necessary permissions to the IAM role that is associated with your Lambda function. The role should have permissions to access the EC2, CloudWatch, and SES services.
+Set up a CloudWatch Events rule to trigger your Lambda function on a schedule. clicking on "Create rule", choosing a schedule expression (e.g., "cron(0 8 * * ? *)"), and selecting your Lambda function as the target.
+Configure the SES service to send emails from your Lambda function. You will need to verify the email addresses you want to use as the sender and recipient email addresses. You can do this in the SES console by going to the "Email Addresses" section and following the verification steps.
+Test your Lambda function by running it manually or waiting for it to be triggered by the CloudWatch Events rule. You should receive an email alert if any of the monitored metrics are outside of the defined threshold values.
